@@ -1,17 +1,12 @@
 let products = [];
 
 
-// GET DATA FROM SESSION STORAGE
-
 if (sessionStorage.getItem("products"))
 {
     products = JSON.parse(sessionStorage.getItem("products"));
 
     displayproducts();
 }
-
-
-// ADD / EDIT PRODUCT
 
 formid.addEventListener("submit", function(event)
 {
@@ -27,7 +22,7 @@ formid.addEventListener("submit", function(event)
     {
         const editindex = editstatus.value;
 
-        // ADD PRODUCT
+    
 
         if (editindex == "")
         {
@@ -40,7 +35,7 @@ formid.addEventListener("submit", function(event)
             });
         }
 
-        // EDIT PRODUCT
+    
 
         else
         {
@@ -68,8 +63,6 @@ formid.addEventListener("submit", function(event)
     }
 });
 
-
-// DISPLAY PRODUCTS
 
 function displayproducts()
 {
@@ -115,8 +108,6 @@ function displayproducts()
 }
 
 
-// EDIT PRODUCT
-
 function editproduct(editindex)
 {
     const productdetails = products[editindex];
@@ -135,8 +126,6 @@ function editproduct(editindex)
 }
 
 
-// DELETE PRODUCT
-
 function deleteproduct(deleteindex)
 {
     if (confirm("Are you sure?"))
@@ -153,29 +142,19 @@ function deleteproduct(deleteindex)
 }
 
 
-// FILTER PRODUCTS
-
 function filterproducts()
 {
-    let name = search.value.toLowerCase();
-
-    let cat = categoryfilter.value;
-
-    let filteredproducts = products.filter(function(item)
+    const nam=search.value.toLowerCase();
+    const cat=categoryfilter.value;
+    let filteredproducts=products.filter((item)=>
     {
-        return item.prname.toLowerCase().includes(name)
-               &&
-               (cat == "" || item.caip == cat);
-    });
-
-
-    tablebody.innerHTML = "";
-
-
-    filteredproducts.forEach(function(item, index)
+        return item.prname.toLowerCase().includes(nam) && (cat==""?||cat==item.caip);
+    })
+    tablebody.innerHTML=" "
+    filteredproducts.forEach((item,index)=>
     {
-        tablebody.innerHTML +=
-        `
+        tablebody.innerHTML+=
+         `
             <tr>
 
                 <td>${index + 1}</td>
@@ -192,11 +171,15 @@ function filterproducts()
 
                 <td>
 
-                    <button class="btn btn-warning" onclick="editproduct(${index})">
+                    <button
+                        class="btn btn-warning"
+                        onclick="editproduct(${index})">
                         Edit
                     </button>
 
-                    <button class="btn btn-danger" onclick="deleteproduct(${index})">
+                    <button
+                        class="btn btn-danger"
+                        onclick="deleteproduct(${index})">
                         Delete
                     </button>
 
@@ -204,15 +187,9 @@ function filterproducts()
 
             </tr>
         `;
-    });
+    })
 }
 
 
-// SEARCH EVENT
-
-search.addEventListener("input", filterproducts);
-
-
-// CATEGORY FILTER EVENT
-
-categoryfilter.addEventListener("change", filterproducts);
+search.addEventListener("input",filerproducts);
+categoryfilter.addEventListener("change",filterproducts)
