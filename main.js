@@ -1,116 +1,218 @@
 let products = [];
-const productform = document.getElementById("productform");
-const pid = document.getElementById("pid");
-const pname = document.getElementById("pname");
-const category = document.getElementById("category");
-const price = document.getElementById("price");
-const quantity = document.getElementById("quantity");
-const editstatus = document.getElementById("editstatus");
-const tablebody = document.getElementById("tablebody");
-const search = document.getElementById("search");
-const filterCategory = document.getElementById("filterCategory");
 
-if (sessionStorage.getItem("products")) {
+
+// GET DATA FROM SESSION STORAGE
+
+if (sessionStorage.getItem("products"))
+{
     products = JSON.parse(sessionStorage.getItem("products"));
-    displayProductList();
+
+    displayproducts();
 }
 
-productform.addEventListener("submit", function(event) {
+
+// ADD / EDIT PRODUCT
+
+formid.addEventListener("submit", function(event)
+{
     event.preventDefault();
 
-    const productidinput = pid.value.trim();
-    const productnameinput = pname.value.trim();
+    const productid = pid.value;
+    const productname = pname.value;
     const categoryinput = category.value;
     const priceinput = price.value;
     const quantityinput = quantity.value;
 
-    if (productidinput && productnameinput && categoryinput && priceinput && quantityinput) {
+    if (productid && productname && categoryinput && priceinput && quantityinput)
+    {
         const editindex = editstatus.value;
 
-        if (editindex === "") {
+        // ADD PRODUCT
+
+        if (editindex == "")
+        {
             products.push({
-                productid: productidinput,
-                productname: productnameinput,
-                category: categoryinput,
-                price: priceinput,
-                quantity: quantityinput
+                prid: productid,
+                prname: productname,
+                caip: categoryinput,
+                prip: priceinput,
+                quip: quantityinput
             });
-        } else {
+        }
+
+        // EDIT PRODUCT
+
+        else
+        {
             products[editindex] = {
-                productid: productidinput,
-                productname: productnameinput,
-                category: categoryinput,
-                price: priceinput,
-                quantity: quantityinput
+                prid: productid,
+                prname: productname,
+                caip: categoryinput,
+                prip: priceinput,
+                quip: quantityinput
             };
-           
         }
 
         sessionStorage.setItem("products", JSON.stringify(products));
-        productform.reset();
-        displayProductList();
-    } else {
-        alert("Please fill the form completely");
+
+        formid.reset();
+
+        editstatus.value = "";
+
+        displayproducts();
+    }
+
+    else
+    {
+        alert("Please enter valid values");
     }
 });
 
-function displayProductList() {
+
+// DISPLAY PRODUCTS
+
+function displayproducts()
+{
     tablebody.innerHTML = "";
 
-    const searchvalue = search.value.toLowerCase();
-    const filtervalue = filterCategory.value;
+    products.forEach(function(item, index)
+    {
+        tablebody.innerHTML +=
+        `
+            <tr>
 
-    products.forEach((item, index) => {
-        const matchesSearch = item.productname.toLowerCase().includes(searchvalue);
-        const matchesCategory = filtervalue === "All Categories" || item.category === filtervalue;
+                <td>${index + 1}</td>
 
-        if (matchesSearch && matchesCategory) {
-            tablebody.innerHTML += `
-                <tr>
-                    <td>${index + 1}</td>
-                    <td>${item.productid}</td>
-                    <td>${item.productname}</td>
-                    <td>${item.category}</td>
-                    <td>${item.price}</td>
-                    <td>${item.quantity}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editProduct(${index})">
-                            Edit
-                        </button>
-                        <button class="btn btn-danger" onclick="deleteProduct(${index})">
-                            Delete
-                        </button>
-                    </td>
-                </tr>
-            `;
-        }
+                <td>${item.prid}</td>
+
+                <td>${item.prname}</td>
+
+                <td>${item.caip}</td>
+
+                <td>${item.prip}</td>
+
+                <td>${item.quip}</td>
+
+                <td>
+
+                    <button
+                        class="btn btn-warning"
+                        onclick="editproduct(${index})">
+                        Edit
+                    </button>
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="deleteproduct(${index})">
+                        Delete
+                    </button>
+
+                </td>
+
+            </tr>
+        `;
     });
 }
 
-function editProduct(productindex) {
-    const productdetails = products[productindex];
 
-    pid.value = productdetails.productid;
-    pname.value = productdetails.productname;
-    category.value = productdetails.category;
-    price.value = productdetails.price;
-    quantity.value = productdetails.quantity;
+// EDIT PRODUCT
 
-    editstatus.value = productindex;
+function editproduct(editindex)
+{
+    const productdetails = products[editindex];
+
+    pid.value = productdetails.prid;
+
+    pname.value = productdetails.prname;
+
+    category.value = productdetails.caip;
+
+    price.value = productdetails.prip;
+
+    quantity.value = productdetails.quip;
+
+    editstatus.value = editindex;
 }
 
-function deleteProduct(productindex) {
-    if (confirm("Are you sure you want to delete this product?")) {
-        products.splice(productindex, 1);
-        sessionStorage.setItem("products", JSON.stringify(products));
-        displayProductList();
+
+// DELETE PRODUCT
+
+function deleteproduct(deleteindex)
+{
+    if (confirm("Are you sure?"))
+    {
+        products.splice(deleteindex, 1);
+
+        sessionStorage.setItem(
+            "products",
+            JSON.stringify(products)
+        );
+
+        displayproducts();
     }
 }
 
-search.addEventListener("input", function() {
-    displayProductList();
-});
 
-filterCategory.addEventListener("change", function() {
-    displayProductList();
-});
+// FILTER PRODUCTS
+
+function filterproducts()
+{
+    let name = search.value.toLowerCase();
+
+    let cat = categoryfilter.value;
+
+    let filteredproducts = products.filter(function(item)
+    {
+        return item.prname.toLowerCase().includes(name)
+               &&
+               (cat == "" || item.caip == cat);
+    });
+
+
+    tablebody.innerHTML = "";
+
+
+    filteredproducts.forEach(function(item, index)
+    {
+        tablebody.innerHTML +=
+        `
+            <tr>
+
+                <td>${index + 1}</td>
+
+                <td>${item.prid}</td>
+
+                <td>${item.prname}</td>
+
+                <td>${item.caip}</td>
+
+                <td>${item.prip}</td>
+
+                <td>${item.quip}</td>
+
+                <td>
+
+                    <button class="btn btn-warning" onclick="editproduct(${index})">
+                        Edit
+                    </button>
+
+                    <button class="btn btn-danger" onclick="deleteproduct(${index})">
+                        Delete
+                    </button>
+
+                </td>
+
+            </tr>
+        `;
+    });
+}
+
+
+// SEARCH EVENT
+
+search.addEventListener("input", filterproducts);
+
+
+// CATEGORY FILTER EVENT
+
+categoryfilter.addEventListener("change", filterproducts);
