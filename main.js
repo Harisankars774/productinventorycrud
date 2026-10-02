@@ -142,17 +142,18 @@ function deleteproduct(deleteindex)
 }
 
 
-function filterproducts()
+function filterprod()
 {
     const nam=search.value.toLowerCase();
     const cat=categoryfilter.value;
     let filteredproducts=products.filter((item)=>
     {
-        return item.prname.toLowerCase().includes(nam) && (cat==""?||cat==item.caip);
+        return ((item.prname.toLowerCase().includes(nam) || nam=="") && (cat==""||cat==item.caip));
     })
     tablebody.innerHTML=" "
-    filteredproducts.forEach((item,index)=>
+    filteredproducts.forEach((item)=>
     {
+        const index=products.indexOf(item);
         tablebody.innerHTML+=
          `
             <tr>
@@ -191,5 +192,5 @@ function filterproducts()
 }
 
 
-search.addEventListener("input",filerproducts);
-categoryfilter.addEventListener("change",filterproducts)
+search.addEventListener("input",filterprod);
+categoryfilter.addEventListener("change",filterprod)
